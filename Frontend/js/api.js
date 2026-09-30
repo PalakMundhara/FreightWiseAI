@@ -1,5 +1,22 @@
 // FreightWise AI - shared API helper. Every page talks to the backend through api().
-const API_BASE = "http://127.0.0.1:5000";      // Flask backend (python app.py)
+// Dynamic API Base:
+// - window.BACKEND_API_URL or localStorage 'freightwise_backend_url' if custom backend is set
+// - http://127.0.0.1:5000 when running locally on localhost or 127.0.0.1
+// - Relative path "" when hosted on cloud/Vercel
+const getApiBase = () => {
+  if (typeof window !== "undefined") {
+    if (window.BACKEND_API_URL) return window.BACKEND_API_URL;
+    try {
+      const stored = localStorage.getItem("freightwise_backend_url");
+      if (stored) return stored;
+    } catch { /* ignore */ }
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
+      return "http://127.0.0.1:5000";
+    }
+  }
+  return "";
+};
+const API_BASE = getApiBase();
 
 class ApiError extends Error {
   constructor(message, status) { super(message); this.status = status; }

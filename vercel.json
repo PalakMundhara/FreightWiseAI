@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "routes": [
+    { "src": "^/$", "dest": "/Frontend/dashboard.html" },
+    { "src": "^/dashboard/?$", "dest": "/Frontend/dashboard.html" },
+    { "src": "^/port/?$", "dest": "/Frontend/port.html" },
+    { "src": "^/vessels/?$", "dest": "/Frontend/vessels.html" },
+    { "src": "^/vessel/?$", "dest": "/Frontend/vessel.html" },
+    { "src": "^/market/?$", "dest": "/Frontend/market.html" },
+    { "src": "^/forecast/?$", "dest": "/Frontend/forecast.html" },
+    { "src": "^/history/?$", "dest": "/Frontend/history.html" },
+    { "src": "^/model/?$", "dest": "/Frontend/model.html" },
+    { "src": "^/about/?$", "dest": "/Frontend/about.html" },
+    { "src": "^/login/?$", "dest": "/Frontend/login.html" },
+    { "src": "^/register/?$", "dest": "/Frontend/register.html" },
+    { "src": "^/css/(.*)", "dest": "/Frontend/css/$1" },
+    { "src": "^/js/(.*)", "dest": "/Frontend/js/$1" },
+    { "src": "^/assets/(.*)", "dest": "/Frontend/assets/$1" },
+    { "src": "^/(.*)\\.html$", "dest": "/Frontend/$1.html" },
+    { "src": "^/(.*)", "dest": "/Frontend/$1" }
+  ]
+}
