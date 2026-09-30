@@ -17,7 +17,7 @@ import joblib
 import numpy as np
 import sklearn
 import pandas as pd
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 
 load_dotenv()
 from utils.preprocessing import EXTERNAL_COLUMNS, HORIZON, TARGET, build_features, load_dataset
@@ -31,18 +31,6 @@ ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://127.0.0.1:5500,http://localh
 STABLE_BAND_PCT = 1.0        # |change| below this is called "stable" (shown to the user)
 DB_PATH = Path(os.getenv("DB_PATH", BASE / "data" / "forecast_history.db"))
 DATA_SOURCE = "Backend dataset (master_training_dataset_clean.csv)"
-
-# Locate Frontend directory for serving on Render / production
-FRONTEND_DIR = None
-for candidate in [
-    BASE.parent / "Frontend",
-    BASE / "Frontend",
-    BASE.parent / "FreightWiseAI" / "Frontend",
-    BASE.parent.parent / "Frontend",
-]:
-    if candidate.exists() and (candidate / "dashboard.html").exists():
-        FRONTEND_DIR = candidate
-        break
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("freightwise")
@@ -186,11 +174,10 @@ S = load_everything()
 @app.after_request
 def add_cors(resp):
     origin = request.headers.get("Origin")
-    if origin:
-        if "*" in ALLOWED_ORIGINS or origin in ALLOWED_ORIGINS or origin.endswith(".onrender.com") or os.getenv("CORS_ALLOW_ALL", "true").lower() == "true":
-            resp.headers["Access-Control-Allow-Origin"] = origin
-            resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-            resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    if origin in ALLOWED_ORIGINS:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return resp
 
 
@@ -256,10 +243,6 @@ RANGES = {"7d": 7, "30d": 30, "90d": 90, "6m": 126, "1y": 252, "all": None}
 # ----------------------------------------------------------------- routes
 @app.get("/")
 def index():
-    accept = request.headers.get("Accept", "")
-    if "text/html" in accept or not accept:
-        if FRONTEND_DIR and (FRONTEND_DIR / "dashboard.html").exists():
-            return send_from_directory(FRONTEND_DIR, "dashboard.html")
     return jsonify(app="FreightWise AI API", status="running", endpoints=sorted(
         r.rule for r in app.url_map.iter_rules() if r.rule.startswith("/api")))
 
@@ -789,22 +772,5 @@ def custom_forecast():
     )
 
 
-# ----------------------------------------------------------------- frontend static routes
-@app.route("/<path:filename>")
-def serve_frontend_file(filename):
-    if filename.startswith("api/"):
-        return fail("Endpoint not found.", 404)
-    if FRONTEND_DIR:
-        target = FRONTEND_DIR / filename
-        if target.is_file():
-            return send_from_directory(FRONTEND_DIR, filename)
-        target_html = FRONTEND_DIR / f"{filename}.html"
-        if target_html.is_file():
-            return send_from_directory(FRONTEND_DIR, f"{filename}.html")
-    return fail("Endpoint not found.", 404)
-
-
 if __name__ == "__main__":
-    host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 5000))
-    app.run(host=host, port=port, debug=False)
+    app.run(host="127.0.0.1", port=int(os.getenv("PORT", 5000)), debug=False)

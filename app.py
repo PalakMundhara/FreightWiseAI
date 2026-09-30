@@ -25,6 +25,4 @@ app = backend_module.app
 S = getattr(backend_module, "S", None)
 
 if __name__ == "__main__":
-    host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 5000))
-    app.run(host=host, port=port, debug=False)
+    app.run(host="127.0.0.1", port=int(os.getenv("PORT", 5000)), debug=False)

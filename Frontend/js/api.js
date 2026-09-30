@@ -1,10 +1,5 @@
 // FreightWise AI - shared API helper. Every page talks to the backend through api().
-// Dynamic API base:
-// - If running via standalone web server on port 5500 or file:// : points to local Flask at http://127.0.0.1:5000
-// - If deployed on Render or served directly by Flask: uses same-origin ""
-const API_BASE = (window.location.protocol.startsWith("http") && window.location.port === "5500")
-  ? "http://127.0.0.1:5000"
-  : (window.location.protocol === "file:" ? "http://127.0.0.1:5000" : "");
+const API_BASE = "http://127.0.0.1:5000";      // Flask backend (python app.py)
 
 class ApiError extends Error {
   constructor(message, status) { super(message); this.status = status; }
