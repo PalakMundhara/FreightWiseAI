@@ -1,0 +1,18 @@
+[build]
+  publish = "Frontend"
+  command = "echo 'Static site - no build step required'"
+
+# Friendly routes (mirrors the original vercel.json)
+[[redirects]]
+  from = "/"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/:page"
+  to = "/:page.html"
+  status = 200
+  force = false
+
+# /api/* is proxied to the Flask backend by netlify/edge-functions/api-proxy.ts,
+# using the BACKEND_API_URL environment variable.
