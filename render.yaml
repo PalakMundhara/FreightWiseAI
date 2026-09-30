@@ -1,0 +1,12 @@
+# One-click hosting for the FreightWise Flask API on Render (render.com -> New -> Blueprint).
+# Copy the resulting service URL into BACKEND_API_URL on Netlify.
+services:
+  - type: web
+    name: freightwise-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
