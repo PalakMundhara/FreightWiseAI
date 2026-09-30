@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account - FreightWise AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-page">
+  <div class="stage">
+    <main class="login-card register-card">
+      <svg class="logo" viewBox="0 0 146 76" aria-hidden="true">
+        <defs><linearGradient id="hull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fd0ff"/><stop offset="1" stop-color="#168BFF"/></linearGradient></defs>
+        <rect x="82" y="3" width="3" height="14" fill="#fff"/><rect x="60" y="15" width="30" height="10" rx="2" fill="#fff"/>
+        <rect x="50" y="25" width="50" height="11" rx="2" fill="#fff"/><rect x="40" y="36" width="70" height="11" rx="2" fill="#fff"/>
+        <path d="M22 47 H128 L112 62 H38 Z" fill="url(#hull)"/>
+        <path d="M6 66 q9 -8 18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0" fill="none" stroke="#24C6FF" stroke-width="3" stroke-linecap="round"/>
+        <path d="M20 73 q8 -6 16 0 t16 0 t16 0 t16 0" fill="none" stroke="#24C6FF" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+      </svg>
+      <h1 class="brand">Freight<span>Wise AI</span></h1>
+      <p class="tagline">Intelligent Freight Forecasting</p>
+
+      <h2 class="reg-title">Create Account</h2>
+      <p class="intro">Join FreightWise AI to access freight forecasts and maritime insights.</p>
+
+      <form id="registerForm" novalidate>
+        <div class="field">
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          <input type="text" id="name" placeholder="Full name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          <input type="email" id="email" placeholder="Email address" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <input type="password" id="password" placeholder="Password (min. 8 characters)" autocomplete="new-password" required>
+          <button type="button" class="eye" data-target="password" aria-label="Show password"><svg viewBox="0 0 24 24"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="field">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <input type="password" id="confirm" placeholder="Confirm password" autocomplete="new-password" required>
+          <button type="button" class="eye" data-target="confirm" aria-label="Show password"><svg viewBox="0 0 24 24"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <button type="submit" class="signin">Create Account
+          <svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="form-msg" id="formMsg" role="alert"></p>
+      </form>
+
+      <p class="switch">Already have an account? <a href="login.html">Sign In</a></p>
+    </main>
+  </div>
+  <script src="js/register.js"></script>
+</body>
+</html>

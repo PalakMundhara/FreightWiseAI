@@ -1,0 +1,102 @@
+/* Login page - matches the FreightWise AI mockup.
+   The stage is the background photo; the card is positioned and scaled in
+   percentages of it, so the layout stays identical at any screen size. */
+.login-page{
+  --W:max(100vw, calc(100vh * 1.7768));   /* rendered width of the photo (16:9) */
+  height:100vh;overflow:hidden;background:#061B2E;
+  font-family:"Poppins","Segoe UI",system-ui,sans-serif;
+}
+.stage{
+  position:absolute;left:50%;top:50%;width:var(--W);aspect-ratio:1672/941;
+  transform:translate(-50%,-50%);
+  background:url("../assets/maritime-bg.jpg") center/100% 100% no-repeat;
+}
+
+/* ---- Glass card (1em = 16px of the mockup, scaled with the photo) ---- */
+.login-card{
+  position:absolute;left:24.16%;top:9.25%;width:31.34%;height:81.3%;
+  font-size:calc(var(--W) / 1672 * 16);
+  padding:2em 2.6em 1.8em;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  background:linear-gradient(180deg,rgba(47,90,134,.60),rgba(40,78,118,.55));
+  -webkit-backdrop-filter:blur(1.1em) saturate(1.2);backdrop-filter:blur(1.1em) saturate(1.2);
+  border:1px solid rgba(140,200,245,.42);border-radius:1.5em;
+  box-shadow:0 1.5em 4em rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14);
+}
+.logo{width:9em;height:4.75em;filter:drop-shadow(0 0 .6em rgba(36,198,255,.35))}
+.brand{font-size:2.3em;font-weight:700;line-height:1.2;margin-top:.3em;color:#fff}
+.brand span{color:var(--cyan)}
+.tagline{font-size:1.2em;color:#d3e0ea;letter-spacing:.02em;margin-top:.05em}
+.wave-divider{display:flex;align-items:center;gap:.9em;width:20em;margin:1.05em 0 .95em}
+.wave-divider::before,.wave-divider::after{content:"";flex:1;height:1px;background:rgba(150,200,240,.35)}
+.wave-divider svg{width:1.6em;height:1em}
+.login-card h2{font-size:1.75em;font-weight:700;line-height:1.2;color:#fff}
+.intro{font-size:1.06em;color:#b9c9d6;line-height:1.45;max-width:20em;margin:.1em 0 1.3em}
+
+form{width:100%}
+.field{position:relative;margin-bottom:1em}
+.field input{
+  width:100%;height:3.6em;padding:0 3em 0 3.3em;border-radius:1em;
+  background:rgba(10,26,44,.55);border:1px solid rgba(190,215,235,.35);
+  color:#ffffff;caret-color:#ffffff;font:inherit;font-size:1em;
+}
+.field input::placeholder{color:#9fb2c2}
+.field input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 .2em rgba(36,198,255,.22)}
+.field input:-webkit-autofill{-webkit-text-fill-color:#fff;caret-color:#fff;box-shadow:0 0 0 100em #14304b inset;transition:background-color 9999s}
+.field .ico{position:absolute;left:1.15em;top:50%;transform:translateY(-50%);width:1.5em;height:1.5em;
+  fill:none;stroke:#dbe7f0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.eye{position:absolute;right:.7em;top:50%;transform:translateY(-50%);width:2.4em;height:2.4em;
+  background:none;border:0;cursor:pointer;color:#dbe7f0;display:grid;place-items:center}
+.eye svg{width:1.45em;height:1.45em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.eye:hover{color:var(--cyan)}
+.eye.shown::after{content:"";position:absolute;width:1.6em;height:2px;background:currentColor;transform:rotate(-40deg)}
+
+.row{display:flex;justify-content:space-between;align-items:center;margin:.9em 0 1.2em}
+.check{display:flex;align-items:center;gap:.7em;color:#e6eef5;cursor:pointer}
+.check input{
+  appearance:none;-webkit-appearance:none;width:1.5em;height:1.5em;margin:0;cursor:pointer;
+  border-radius:.3em;border:1.5px solid rgba(190,215,235,.6);background:transparent;
+}
+.check input:checked{
+  border-color:#2ab6ff;background:#2ab6ff center/80% no-repeat
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.5l3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+.row a{color:#2ab6ff}
+
+.signin{
+  width:100%;height:2.7em;border:0;border-radius:.9em;cursor:pointer;color:#fff;
+  font:700 1.25em/1 "Poppins","Segoe UI",sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:.5em;
+  background:linear-gradient(180deg,#38b4ff,#1682ff);
+  box-shadow:0 .5em 1.4em rgba(22,139,255,.45);transition:transform .15s,box-shadow .2s;
+}
+.signin svg{width:1.1em;height:1.1em;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.signin:hover{transform:translateY(-1px);box-shadow:0 .7em 1.8em rgba(36,198,255,.5)}
+.form-msg{height:0;overflow:visible;position:relative;top:.5em;font-size:.82em;color:#ff9a9a}
+
+.or{display:flex;align-items:center;gap:1em;width:100%;color:#c3d1dc;margin:1.4em 0 .75em}
+.or::before,.or::after{content:"";flex:1;height:1px;background:rgba(190,215,235,.3)}
+.noacct{color:#fff;margin-bottom:.7em}
+.create{
+  display:grid;place-items:center;width:17.9em;height:2.7em;border-radius:.8em;
+  border:1.5px solid var(--cyan);color:var(--cyan);font-weight:600;text-decoration:none;
+  transition:background .2s;
+}
+.create:hover{background:rgba(36,198,255,.1);text-decoration:none}
+
+/* ---- Phones / small tablets: same look, simple centred layout ---- */
+@media (max-width:820px){
+  .login-page{overflow:auto;height:auto;min-height:100vh}
+  .stage{position:fixed;inset:0;width:auto;aspect-ratio:auto;transform:none;
+    background-size:cover;background-position:62% center;
+    display:grid;place-items:center;overflow:auto;padding:20px}
+  .login-card{position:relative;left:auto;top:auto;height:auto;width:min(100%,430px);font-size:16px;
+    background:linear-gradient(180deg,rgba(38,74,112,.82),rgba(30,62,98,.78))}
+}
+
+/* ---- Register page additions ---- */
+.register-card{justify-content:center}
+.register-card .intro{margin-bottom:1.1em}
+.register-card .field{margin-bottom:.85em}
+.reg-title{margin-top:1em}
+.switch{margin-top:1.7em;color:#d3e0ea}

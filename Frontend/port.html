@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Port &amp; Weather - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:12px;font-size:.78rem;font-weight:700;background:rgba(75,227,160,.18);color:#4be3a0;border:1px solid rgba(75,227,160,.4)}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:#4be3a0;box-shadow:0 0 8px #4be3a0;animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+    .tbl-search{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+    .tbl-search input{padding:8px 12px;border-radius:8px;background:rgba(4,20,35,.7);border:1px solid rgba(50,200,255,.25);color:#fff;font:inherit;font-size:.85rem;min-width:240px}
+    .table-container{max-height:360px;overflow-y:auto;border-radius:8px;border:1px solid rgba(50,200,255,.15)}
+    .source-strip{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 20px;padding:10px 14px;border-radius:10px;background:rgba(10,41,66,.5);border:1px solid rgba(50,200,255,.15);font-size:.82rem}
+    .source-tag{display:inline-flex;align-items:center;gap:5px;color:#AFC3D0}
+    .source-tag b{color:#fff}
+    .source-tag .ok{color:#4be3a0}
+    .gauge-card{background:linear-gradient(135deg,rgba(16,56,92,.5),rgba(6,27,46,.7));border:1px solid rgba(36,198,255,.25);border-radius:10px;padding:16px}
+    .gauge-val{font-size:2rem;font-weight:800;color:#24C6FF;margin:4px 0}
+  </style>
+</head>
+<body class="app" data-page="port">
+  <main class="content">
+    <header class="page-head">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <h1>Port &amp; Marine Weather Intelligence</h1>
+          <p>Real-time maritime weather, wave dynamics, and port conditions for East Coast of India (Paradip Port Authority).</p>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>Live Feeds Connected</span>
+      </div>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+
+    <!-- Active Source Status Strip -->
+    <div class="source-strip">
+      <div class="source-tag"><span>WeatherAPI.com:</span> <b class="ok" id="statusWeather">Live</b></div>
+      <div class="source-tag"><span>Open-Meteo Marine:</span> <b class="ok" id="statusMarine">Live</b></div>
+      <div class="source-tag"><span>AISStream Congestion:</span> <b class="ok" id="statusAIS">Live</b></div>
+      <div class="source-tag" style="margin-left:auto"><span class="muted" id="lastObserved">Updated: Just now</span></div>
+    </div>
+
+    <!-- LIVE METEOROLOGICAL & MARINE STATS GRID -->
+    <section class="grid-6">
+      <!-- Live Temperature -->
+      <article class="stat glass">
+        <div class="label">Current Temperature</div>
+        <div class="state" id="statTemp" style="font-size:1.8rem;color:#fff">32.1 °C</div>
+        <div class="sub" id="statCondition">Cloudy · Feels like 36.5 °C (WeatherAPI)</div>
+      </article>
+
+      <!-- Live Wind -->
+      <article class="stat glass">
+        <div class="label">Wind Velocity &amp; Direction</div>
+        <div class="state" id="statWind" style="font-size:1.6rem;color:#7be0ff">8.3 km/h S</div>
+        <div class="sub" id="statPressure">Pressure: 1008 mb · Vis: 10 km</div>
+      </article>
+
+      <!-- Live Significant Wave Height -->
+      <article class="stat glass">
+        <div class="label">Significant Wave Height</div>
+        <div class="state" id="statWave" style="font-size:1.8rem;color:#24C6FF">1.04 m</div>
+        <div class="sub" id="statWavePeriod">Wave Period: 13.4s (Open-Meteo Marine)</div>
+      </article>
+
+      <!-- Live Swell & Ocean Current -->
+      <article class="stat glass">
+        <div class="label">Swell &amp; Ocean Currents</div>
+        <div class="state" id="statSwell" style="font-size:1.4rem;color:#4be3a0">0.98 m Swell</div>
+        <div class="sub" id="statCurrent">Current: 0.9 km/h (217° SW)</div>
+      </article>
+
+      <!-- AIS-Derived Congestion Score -->
+      <article class="stat glass">
+        <div class="label">AIS Congestion Score</div>
+        <div class="state" id="statCongestion" style="font-size:1.8rem;color:#ffd27a">42.0 / 100</div>
+        <div class="sub" id="statCongCategory">Moderate Queue · Stable Trend</div>
+      </article>
+
+      <!-- Anchorage Queue & Berths -->
+      <article class="stat glass">
+        <div class="label">Port Activity &amp; Queue</div>
+        <div class="state" id="statPortAct" style="font-size:1.3rem">24 Berths / 21 Working</div>
+        <div class="sub" id="statAnchorage">10 Vessels queued at anchorage (~36h wait)</div>
+      </article>
+    </section>
+
+    <!-- LIVE CONGESTION & WEATHER ANALYSIS SECTION -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:20px">
+      <!-- AIS-derived Congestion Card -->
+      <div class="panel glass">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <h3 style="color:#24C6FF;font-size:1rem">AIS-Derived Port Congestion</h3>
+          <span class="status-pill waiting" id="badgeCong">Moderate Queue</span>
+        </div>
+        <p class="muted" style="font-size:.82rem;margin:6px 0 14px">
+          Observational metric derived from live AIS vessel telemetry across Paradip Port BBOX [19.8N–20.6N, 86.2E–87.2E]. Not an official Port Authority index.
+        </p>
+        <div class="res-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div><div class="k">Vessel Density</div><div class="v" id="valDensity">2.1 per 1000 km²</div></div>
+          <div><div class="k">Anchorage Density</div><div class="v" id="valAnchDensity">3.2 per 1000 km²</div></div>
+          <div><div class="k">Waiting Time Proxy</div><div class="v" id="valWaitProxy">~36.0 Hours</div></div>
+          <div><div class="k">Stationary Ratio</div><div class="v" id="valStationary">32.2%</div></div>
+        </div>
+      </div>
+
+      <!-- Marine Safety Conditions Card -->
+      <div class="panel glass">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <h3 style="color:#24C6FF;font-size:1rem">Marine Berth Operations &amp; Safety</h3>
+          <span class="status-pill working">Safe Navigation</span>
+        </div>
+        <p class="muted" style="font-size:.82rem;margin:6px 0 14px">
+          Combined maritime weather indicators from WeatherAPI.com and Open-Meteo Marine API.
+        </p>
+        <div class="res-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div><div class="k">Wind Wave Height</div><div class="v" id="valWindWave">0.04 m</div></div>
+          <div><div class="k">Swell Wave Period</div><div class="v" id="valSwellPeriod">11.35 s</div></div>
+          <div><div class="k">Relative Humidity</div><div class="v" id="valHumidity">57%</div></div>
+          <div><div class="k">Barometric Pressure</div><div class="v" id="valPressure">1008.0 mb</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table 1: Paradip Berth Specifications -->
+    <section class="panel glass" style="margin-top:20px">
+      <div class="tbl-search">
+        <div>
+          <h3>Paradip Port Berth Specifications &amp; Permissible Dimensions</h3>
+          <p class="muted" style="font-size:.84rem">24 operational berths including dedicated mechanised coal, iron ore, container, and oil jetties.</p>
+        </div>
+        <input type="text" id="berthSearch" placeholder="Search berth name or cargo…">
+      </div>
+      <div class="table-container">
+        <table class="tbl" id="berthsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Berth Name</th>
+              <th>Commodity Handled</th>
+              <th>Max LOA (m)</th>
+              <th>Max Beam (m)</th>
+              <th>Max Draft (m)</th>
+            </tr>
+          </thead>
+          <tbody id="berthsBody">
+            <tr><td style="font-weight:700;color:#24C6FF">1</td><td style="font-weight:600">Berth No. 01 (North Oil Jetty)</td><td><span class="status-pill expected">POL</span></td><td>260 m</td><td>46 m</td><td style="color:#7be0ff;font-weight:600">13.5 m</td></tr>
+            <tr><td style="font-weight:700;color:#24C6FF">2</td><td style="font-weight:600">Berth No. 02 (New Iron Ore Berth)</td><td><span class="status-pill expected">Iron Ore</span></td><td>300 m</td><td>46 m</td><td style="color:#7be0ff;font-weight:600">16.0 m</td></tr>
+            <tr><td style="font-weight:700;color:#24C6FF">3</td><td style="font-weight:600">Berth No. 03 (Mechanised Coal Berth 1)</td><td><span class="status-pill expected">Thermal Coal</span></td><td>260 m</td><td>46 m</td><td style="color:#7be0ff;font-weight:600">14.5 m</td></tr>
+            <tr><td style="font-weight:700;color:#24C6FF">4</td><td style="font-weight:600">Berth No. 04 (Mechanised Coal Berth 2)</td><td><span class="status-pill expected">Coking Coal</span></td><td>260 m</td><td>46 m</td><td style="color:#7be0ff;font-weight:600">14.5 m</td></tr>
+            <tr><td style="font-weight:700;color:#24C6FF">5</td><td style="font-weight:600">Berth No. 05 (General Cargo Berth)</td><td><span class="status-pill expected">Dry Bulk</span></td><td>230 m</td><td>32 m</td><td style="color:#7be0ff;font-weight:600">12.5 m</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Table 2: Tidal Reference Datums & Weather -->
+    <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;margin-top:20px">
+      <section class="panel glass">
+        <h3>Tidal Reference Datums (Paradip)</h3>
+        <p class="muted" style="font-size:.84rem;margin-bottom:12px">Standard navigational tidal datums used for vessel draft clearance.</p>
+        <div class="table-container" style="max-height:260px">
+          <table class="tbl" id="tidesTable">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Datum Value</th>
+                <th>Unit</th>
+                <th>Reference Description</th>
+              </tr>
+            </thead>
+            <tbody id="tidesBody">
+              <tr><td style="font-weight:600">Tide Type</td><td style="color:#24C6FF;font-weight:700">Semi-diurnal</td><td class="muted">—</td><td class="muted">2 high tides and 2 low tides per day</td></tr>
+              <tr><td style="font-weight:600">Highest High Water (HHW)</td><td style="color:#24C6FF;font-weight:700">3.50</td><td class="muted">m</td><td class="muted">Relative to Chart Datum</td></tr>
+              <tr><td style="font-weight:600">Mean High Water Springs (MHWS)</td><td style="color:#24C6FF;font-weight:700">2.58</td><td class="muted">m</td><td class="muted">Relative to Chart Datum</td></tr>
+              <tr><td style="font-weight:600">Mean Sea Level (MSL)</td><td style="color:#24C6FF;font-weight:700">1.66</td><td class="muted">m</td><td class="muted">Relative to Chart Datum</td></tr>
+              <tr><td style="font-weight:600">Mean Low Water Springs (MLWS)</td><td style="color:#24C6FF;font-weight:700">0.71</td><td class="muted">m</td><td class="muted">Relative to Chart Datum</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel glass">
+        <h3>Monthly Throughput Summary (Paradip Port)</h3>
+        <p class="muted" style="font-size:.84rem;margin-bottom:12px">Cargo volumes handled across coastal and overseas routes.</p>
+        <div class="table-container" style="max-height:260px">
+          <table class="tbl" id="cargoTable">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Total Cargo (MT)</th>
+                <th>Overseas (MT)</th>
+                <th>Coastal (MT)</th>
+                <th>Overseas Share</th>
+              </tr>
+            </thead>
+            <tbody id="cargoBody">
+              <tr><td style="font-weight:600">September 2024</td><td style="color:#4be3a0;font-weight:700">10,563,325</td><td>5,764,696</td><td>4,798,629</td><td><span class="status-pill expected">54.57%</span></td></tr>
+              <tr><td style="font-weight:600">October 2024</td><td style="color:#4be3a0;font-weight:700">11,760,822</td><td>6,652,821</td><td>5,108,001</td><td><span class="status-pill expected">56.57%</span></td></tr>
+              <tr><td style="font-weight:600">November 2024</td><td style="color:#4be3a0;font-weight:700">11,760,913</td><td>7,429,599</td><td>4,331,314</td><td><span class="status-pill expected">63.16%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/api.js?v=4"></script>
+  <script src="js/context.js?v=4"></script>
+</body>
+</html>

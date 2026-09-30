@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market Intelligence - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:12px;font-size:.78rem;font-weight:700;background:rgba(75,227,160,.18);color:#4be3a0;border:1px solid rgba(75,227,160,.4)}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:#4be3a0;box-shadow:0 0 8px #4be3a0;animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+    .benchmarks-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0}
+    .benchmark-card{background:linear-gradient(135deg,rgba(16,56,92,.6),rgba(6,27,46,.8));border:1px solid rgba(36,198,255,.3);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+    .benchmark-card::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:#24C6FF}
+    .bench-price{font-size:2.4rem;font-weight:800;color:#fff;margin:4px 0}
+  </style>
+</head>
+<body class="app" data-page="market">
+  <main class="content">
+    <header class="page-head">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <h1>Market &amp; Freight Intelligence</h1>
+          <p>Global Baltic freight benchmarks and domestic macroeconomic indicators driving chartering rates.</p>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>OilPriceAPI Live Feeds Connected</span>
+      </div>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+
+    <!-- LIVE BALTIC BENCHMARKS (OilPriceAPI) -->
+    <div class="benchmarks-strip">
+      <div class="benchmark-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="label" style="font-size:.85rem;color:#AFC3D0;text-transform:uppercase;letter-spacing:.5px">Baltic Dry Index (BDI)</div>
+            <div class="bench-price" id="valBDI">3,178.0</div>
+            <div class="sub" id="subBDI" style="color:#ff8a8a;font-weight:600">-2.75% (24h change) · OilPriceAPI</div>
+          </div>
+          <span class="status-pill expected" style="font-size:.78rem">Daily Benchmark</span>
+        </div>
+        <p class="muted" style="font-size:.78rem;margin-top:10px">Composite dry bulk market index across Capesize, Panamax, and Supramax vessels.</p>
+      </div>
+
+      <div class="benchmark-card" style="border-color:rgba(75,227,160,.4)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="label" style="font-size:.85rem;color:#AFC3D0;text-transform:uppercase;letter-spacing:.5px">Baltic Capesize Index (BCI)</div>
+            <div class="bench-price" id="valBCI">5,103.0</div>
+            <div class="sub" id="subBCI" style="color:#ff8a8a;font-weight:600">-11.77% (24h change) · OilPriceAPI</div>
+          </div>
+          <span class="status-pill expected" style="font-size:.78rem">Capesize Route Benchmark</span>
+        </div>
+        <p class="muted" style="font-size:.78rem;margin-top:10px">Dedicated ocean freight index for large 100k+ DWT bulk carriers transporting iron ore and coal.</p>
+      </div>
+    </div>
+
+    <!-- Benchmark Disclaimer -->
+    <p class="muted" style="font-size:.8rem;margin:-10px 0 20px;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:6px">
+      ℹ️ <b>Market Note:</b> Baltic indices (BDI/BCI) are published on a daily cadence by the Baltic Exchange. They serve as global benchmark price assessments rather than intraday tradable quotes.
+    </p>
+
+    <!-- CORE MARKET STATS -->
+    <section class="grid-6">
+      <article class="stat glass"><div class="label">Current Freight Benchmark</div><div class="value" id="mClose">--</div><div class="sub" id="mCloseSub"></div></article>
+      <article class="stat glass"><div class="label">7-Day Average</div><div class="value" id="m7">--</div><div class="sub">Mean of last 7 closes</div></article>
+      <article class="stat glass"><div class="label">30-Day Average</div><div class="value" id="m30">--</div><div class="sub">Mean of last 30 closes</div></article>
+      <article class="stat glass"><div class="label">Coal Import Indicator</div><div class="value" id="mCoal">--</div><div class="sub" id="mCoalSub"></div></article>
+    </section>
+    <p class="muted" style="font-size:.8rem;margin-top:8px" id="src"></p>
+
+    <section class="panel glass">
+      <div class="chart-head">
+        <h3>Freight and rolling averages</h3>
+        <div class="range-btns" id="ranges">
+          <button data-r="30d">30D</button>
+          <button data-r="90d">90D</button>
+          <button data-r="6m">6M</button>
+          <button data-r="1y" class="active">1Y</button>
+          <button data-r="all">ALL</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="freightChart"></canvas></div>
+    </section>
+
+    <section class="panel glass">
+      <div class="chart-head">
+        <h3>Commodity / industry indicator</h3>
+        <select id="indSel" aria-label="Indicator" style="padding:8px;border-radius:10px;background:rgba(4,20,35,.7);border:1px solid var(--border);color:#fff"></select>
+      </div>
+      <div class="chart-box" style="height:280px"><canvas id="indChart"></canvas></div>
+      <p class="muted" id="indNote" style="font-size:.8rem;margin-top:8px"></p>
+    </section>
+
+    <section class="panel glass">
+      <h3>Market insights</h3>
+      <div id="insights" class="muted">Loading freight intelligence…</div>
+    </section>
+
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/api.js?v=4"></script>
+  <script src="js/market.js?v=4"></script>
+</body>
+</html>

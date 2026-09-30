@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About FreightWise AI - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="app" data-page="about">
+  <main class="content">
+    <header class="page-head"><h1>About FreightWise AI</h1><p>AI-powered freight forecasting and maritime decision support for bulk cargo to the East Coast of India.</p></header>
+    <div id="banner" class="banner" hidden></div>
+
+    <section class="panel glass"><h3>The problem</h3><p class="muted">Freight rates are not constant. They move with recent freight trends, cargo and import activity, commodity conditions, port activity, weather and vessel availability. That uncertainty makes it hard for teams buying bulk cargo and chartering vessels to understand what freight conditions may look like next.</p></section>
+    <section class="panel glass"><h3>Our solution</h3><p class="muted">FreightWise AI brings current freight, historical trends, a machine-learning forecast and supporting market context into one place, so a procurement or chartering team can review the evidence before deciding.</p></section>
+    <section class="panel glass"><h3>How it works</h3><div class="flow"><div>Historical Data</div><span>↓</span><div>Feature Engineering</div><span>↓</span><div>Machine Learning</div><span>↓</span><div>Freight Forecast</div><span>↓</span><div>Market Context</div><span>↓</span><div>Maritime Context</div><span>↓</span><div>Decision Support</div></div></section>
+    <section class="cols-2">
+      <div class="panel glass"><h3>Machine learning</h3><p class="muted">A trained Extra Trees regression model forecasts the dry-bulk freight indicator (<code>bdry_close</code>) 14 trading observations ahead. It learns from freight lags, rolling statistics, momentum, calendar effects and commodity and industry indicators. The Model Insights page shows its real inputs, training period and test-period error.</p></div>
+      <div class="panel glass"><h3>Key features</h3><p class="muted">Freight forecasting · Historical analysis · Market intelligence · Commodity context · Maritime context (when data is connected) · Forecast history · Model insights · Decision support</p></div>
+      <div class="panel glass"><h3>Technology stack</h3><p class="muted"><b>Frontend:</b> HTML, CSS, JavaScript, Chart.js<br><b>Backend:</b> Python, Flask, pandas, SQLite<br><b>ML:</b> scikit-learn (Extra Trees), joblib</p></div>
+      <div class="panel glass"><h3>Decision support</h3><p class="muted">FreightWise AI provides analytical information to support procurement and chartering decisions. It does not replace human commercial judgment. Forecasts are model estimates, not guarantees, and the app reports where its data sources are not connected.</p></div>
+    </section>
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+  <script src="js/common.js"></script>
+</body>
+</html>

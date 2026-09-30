@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forecast Center - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/forecast.css">
+  <style>
+    /* Premium Visual Enhancements for User Input Forecaster */
+    .hero-forecast{background:linear-gradient(135deg,rgba(10,41,66,.85),rgba(4,20,35,.95));border:1px solid rgba(36,198,255,.3);border-radius:14px;padding:24px;margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+    .hero-forecast h2{color:#24C6FF;font-size:1.4rem;display:flex;align-items:center;gap:10px;margin-bottom:6px}
+    .hero-forecast p.sub{color:#AFC3D0;font-size:.9rem;margin-bottom:18px;line-height:1.45}
+    .input-grid-card{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;background:rgba(255,255,255,.02);padding:18px;border-radius:12px;border:1px solid rgba(50,200,255,.15)}
+    .param-group{display:flex;flex-direction:column;gap:6px}
+    .param-group label{font-size:.82rem;font-weight:600;color:#AFC3D0;display:flex;justify-content:space-between}
+    .param-group label .unit{color:rgba(175,195,208,.6);font-weight:400;font-size:.75rem}
+    .param-input{padding:10px 12px;border-radius:8px;background:rgba(4,20,35,.85);border:1px solid rgba(50,200,255,.25);color:#fff;font:inherit;font-size:.95rem;transition:border-color .2s}
+    .param-input:focus{outline:none;border-color:#24C6FF;box-shadow:0 0 10px rgba(36,198,255,.3)}
+    .preset-pill-bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}
+    .preset-pill{padding:6px 14px;border-radius:20px;background:rgba(36,198,255,.08);border:1px solid rgba(36,198,255,.25);color:#7be0ff;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .preset-pill:hover{background:rgba(36,198,255,.25);color:#fff;border-color:#24C6FF;transform:translateY(-1px)}
+    .slider-box{display:flex;align-items:center;gap:12px}
+    .slider-box input[type=range]{flex:1;accent-color:#24C6FF;cursor:pointer}
+    .slider-badge{font-size:.9rem;font-weight:700;color:#24C6FF;min-width:60px;text-align:right}
+    
+    .results-dashboard{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.1fr);gap:20px;margin-top:20px}
+    .kpi-prediction-box{background:linear-gradient(135deg,rgba(16,56,92,.6),rgba(6,27,46,.8));border:1px solid rgba(50,200,255,.3);border-radius:12px;padding:20px}
+    .pred-price-huge{font-size:3rem;font-weight:800;color:#fff;letter-spacing:-.5px;margin:4px 0}
+    .trend-indicator{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-weight:700;font-size:.95rem}
+    .trend-indicator.up{background:rgba(75,227,160,.2);color:#4be3a0;border:1px solid rgba(75,227,160,.4)}
+    .trend-indicator.down{background:rgba(255,138,138,.2);color:#ff8a8a;border:1px solid rgba(255,138,138,.4)}
+    .trend-indicator.stable{background:rgba(255,210,122,.2);color:#ffd27a;border:1px solid rgba(255,210,122,.4)}
+    
+    .btn-calc-glow{background:linear-gradient(135deg,#24C6FF,#168BFF);color:#061B2E;font-size:1.05rem;font-weight:700;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 0 20px rgba(36,198,255,.4);transition:all .25s ease}
+    .btn-calc-glow:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(36,198,255,.65)}
+    .btn-calc-glow:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    
+    .action-panel{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid rgba(50,200,255,.15);flex-wrap:wrap;gap:14px}
+    
+    @media(max-width:960px){
+      .results-dashboard{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body class="app" data-page="forecast">
+  <main class="content">
+    <header class="page-head">
+      <h1>Freight Forecast Center</h1>
+      <p>Interactive machine learning decision-support platform powered by 300 Extra Trees estimators.</p>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+
+    <!-- PRIMARY SECTION: USER INPUT FORECAST GENERATOR -->
+    <section class="hero-forecast">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Interactive Freight Rate Forecaster (User Input Studio)
+          </h2>
+          <p class="sub">
+            Input your market parameters below. The <b>Extra Trees ML model (300 estimators)</b> will compute the forward $t+14$ freight forecast, directional market signal, and uncertainty bounds directly from your custom figures.
+          </p>
+        </div>
+        <span class="badge" style="background:rgba(36,198,255,.15);border:1px solid #24C6FF;color:#24C6FF;font-weight:700">Model: Extra Trees (t+14)</span>
+      </div>
+
+      <!-- Quick Preset Pills -->
+      <div class="preset-pill-bar">
+        <span style="font-size:.8rem;color:#AFC3D0;align-self:center;margin-right:4px">Quick Presets:</span>
+        <button type="button" class="preset-pill" id="pillBaseline">Live Baseline ($16.14)</button>
+        <button type="button" class="preset-pill" id="pillBullish">Bullish Surge (+15% Rate, +10% Coal)</button>
+        <button type="button" class="preset-pill" id="pillBearish">Bearish Easing (-15% Rate, -8% Coal)</button>
+        <button type="button" class="preset-pill" id="pillMonsoon">Monsoon Weather Disruption</button>
+      </div>
+
+      <!-- User Input Parameters Form -->
+      <form id="userInputForecastForm">
+        <div class="input-grid-card">
+          <!-- 1. Freight Base Price -->
+          <div class="param-group" style="grid-column:1 / -1">
+            <label for="inputClose">
+              <span>Freight Benchmark Rate (BDRY Close Proxy)</span>
+              <span class="unit">$ USD per metric tonne proxy</span>
+            </label>
+            <div class="slider-box">
+              <input type="range" id="inputCloseRange" min="5.0" max="35.0" step="0.1" value="16.14">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="color:#24C6FF;font-weight:700">$</span>
+                <input type="number" step="0.01" id="inputClose" class="param-input" style="width:115px" value="16.14" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Daily Trading Volume -->
+          <div class="param-group">
+            <label for="inputVolume">
+              <span>Trade Volume</span>
+              <span class="unit">Contracts / Day</span>
+            </label>
+            <input type="number" id="inputVolume" class="param-input" value="150000" min="1000" step="10000">
+          </div>
+
+          <!-- 3. Intraday High-Low Range -->
+          <div class="param-group">
+            <label for="inputRange">
+              <span>Daily High-Low Range</span>
+              <span class="unit">$ USD Spread</span>
+            </label>
+            <input type="number" step="0.05" id="inputRange" class="param-input" value="0.85" min="0.1">
+          </div>
+
+          <!-- 4. Coal Import Volume Index -->
+          <div class="param-group">
+            <label for="inputCoal">
+              <span>Hard Coal Import Index</span>
+              <span class="unit">COL.HRD.IMP.TOT</span>
+            </label>
+            <input type="number" step="0.1" id="inputCoal" class="param-input" value="19.69">
+          </div>
+
+          <!-- 5. National Electricity Demand -->
+          <div class="param-group">
+            <label for="inputPower">
+              <span>Electricity &amp; Power Demand</span>
+              <span class="unit">ELY.DEM (MU)</span>
+            </label>
+            <input type="number" step="0.5" id="inputPower" class="param-input" value="135.20">
+          </div>
+
+          <!-- 6. Cement Industrial Output -->
+          <div class="param-group">
+            <label for="inputCement">
+              <span>Domestic Cement Index</span>
+              <span class="unit">CEM.PRD</span>
+            </label>
+            <input type="number" step="0.5" id="inputCement" class="param-input" value="110.00">
+          </div>
+
+          <!-- 7. Short-Term Market Momentum -->
+          <div class="param-group">
+            <label for="inputMomentum">
+              <span>5-Day Market Momentum</span>
+              <span class="unit">% Shift</span>
+            </label>
+            <div class="slider-box">
+              <input type="range" id="inputMomentumRange" min="-15" max="15" step="0.5" value="0">
+              <span id="inputMomentumVal" class="slider-badge">0.0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-panel">
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;color:#AFC3D0;cursor:pointer">
+            <input type="checkbox" id="checkSaveHistory" checked>
+            Log this forecast into SQLite History Database
+          </label>
+          <div style="display:flex;gap:12px">
+            <button type="button" id="btnResetInputs" class="btn btn-outline">Reset to Defaults</button>
+            <button type="submit" id="btnRunUserForecast" class="btn-calc-glow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Generate Forecast from My Inputs
+            </button>
+          </div>
+        </div>
+        <div id="userForecastStatus" class="muted" style="margin-top:10px;font-size:.88rem"></div>
+      </form>
+
+      <!-- RESULTS SECTION FOR USER INPUT FORECAST -->
+      <div class="results-dashboard">
+        <!-- Predicted Output Card -->
+        <div class="kpi-prediction-box">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+            <div>
+              <div class="muted" style="font-size:.85rem;text-transform:uppercase;letter-spacing:.5px">Predicted t+14 Freight Benchmark</div>
+              <div class="pred-price-huge" id="userPredPrice">$15.46</div>
+              <div class="muted" style="font-size:.86rem" id="userHorizonNote">Horizon: 14 trading observations (~14 business days)</div>
+            </div>
+            <div id="userTrendBadge" class="trend-indicator down" style="font-size:1.05rem;padding:6px 14px">
+              ▼ -4.22%
+            </div>
+          </div>
+
+          <div class="res-grid" style="margin:16px 0">
+            <div><div class="k">Your Input Starting Price</div><div class="v" id="userInputRate">$16.14</div></div>
+            <div><div class="k">Expected Dollar Change</div><div class="v" id="userDollarDelta">-$0.68</div></div>
+            <div><div class="k">Model Uncertainty Range</div><div class="v" id="userTreeSpread">$11.89 – $20.33</div></div>
+            <div><div class="k">Baseline Model Reference</div><div class="v" id="userBaselineRef">$15.46</div></div>
+          </div>
+
+          <div class="rec-box" id="userRecBox" style="margin-top:14px;background:rgba(36,198,255,.1);border-left:4px solid #24C6FF;padding:14px;border-radius:8px">
+            <strong style="color:#7be0ff">Commercial Chartering Guidance:</strong><br>
+            <span id="userRecText">Loading recommendation based on simulated market trajectory…</span>
+          </div>
+        </div>
+
+        <!-- Trajectory Chart Card -->
+        <div class="panel glass" style="margin:0">
+          <h3 style="font-size:1rem;color:#24C6FF;margin-bottom:8px">Input Benchmark vs Forward Predicted Trajectory</h3>
+          <p class="muted" style="font-size:.8rem;margin-bottom:12px">Visual comparison of your starting benchmark rate and the forward projected rate.</p>
+          <div class="chart-box" style="height:230px"><canvas id="userCompareChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECONDARY SECTION: AUTOMATED HISTORICAL PIPELINE AUDIT -->
+    <section class="panel glass" style="margin-top:24px">
+      <details>
+        <summary style="font-size:1rem;font-weight:600;color:#AFC3D0;cursor:pointer">
+          Automated Dataset Feed &amp; Historical Model Audit (Click to expand)
+        </summary>
+        <div style="margin-top:16px">
+          <div class="fc-grid">
+            <div class="panel glass">
+              <h3>Automated Dataset Vector</h3>
+              <p class="muted" style="font-size:.85rem">Uses 49 statistical, lag, and macro features from the historical dataset up to <b id="asOf">the latest date</b>.</p>
+              <button id="genBtn" class="btn btn-primary" style="margin:12px 0">Generate Automated Feed</button>
+              <div id="status" class="muted" role="status"></div>
+              <details style="margin-top:10px"><summary>View 49 Automated Feature Values</summary><div id="featureList" class="feat-list"></div></details>
+            </div>
+            <div class="panel glass">
+              <h3>Historical Trajectory</h3>
+              <div class="chart-box" style="height:220px"><canvas id="fcChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/api.js?v=3"></script>
+  <script src="js/forecast.js?v=3"></script>
+</body>
+</html>

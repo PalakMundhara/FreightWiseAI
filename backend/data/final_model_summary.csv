@@ -1,0 +1,9 @@
+Item,Value
+Final ML Model,Extra Trees
+Forecast Horizon,t+14
+Target,BDRY Close
+MAE,0.9178
+RMSE,1.3473
+MSE,1.8152
+sMAPE,8.45%
+Number of Features,52

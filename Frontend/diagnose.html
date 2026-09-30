@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connection check - FreightWise AI</title>
+  <style>
+    body{font-family:"Segoe UI",system-ui,sans-serif;background:#061B2E;color:#fff;max-width:900px;margin:0 auto;padding:28px 18px}
+    h1{font-size:1.4rem} h2{font-size:1rem;color:#24C6FF;margin:26px 0 8px}
+    .row{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(50,200,255,.15);font-size:.9rem}
+    .tag{flex:none;width:52px;font-weight:700}
+    .pass .tag{color:#4be3a0}.fail .tag{color:#ff8a8a}.warn .tag{color:#ffd27a}
+    .detail{color:#AFC3D0} #summary{margin-top:26px;padding:16px;border-radius:12px;border:1px solid rgba(50,200,255,.4);background:rgba(10,41,66,.6)}
+    code{background:rgba(255,255,255,.08);padding:1px 6px;border-radius:5px}
+  </style>
+</head>
+<body>
+  <h1>FreightWise AI: connection check</h1>
+  <p class="detail">Open this page with Live Server. It tests each link in the chain and reports the first thing that is broken.</p>
+  <div id="out"></div>
+  <div id="summary">Running checks…</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/diagnose.js"></script>
+</body>
+</html>

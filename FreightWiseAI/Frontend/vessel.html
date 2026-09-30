@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vessel Insights - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:12px;font-size:.78rem;font-weight:700;background:rgba(75,227,160,.18);color:#4be3a0;border:1px solid rgba(75,227,160,.4)}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:#4be3a0;box-shadow:0 0 8px #4be3a0;animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+    .status-pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.75rem;font-weight:600}
+    .status-pill.working{background:rgba(75,227,160,.18);color:#4be3a0}
+    .status-pill.waiting{background:rgba(255,210,122,.18);color:#ffd27a}
+    .status-pill.expected{background:rgba(36,198,255,.18);color:#24C6FF}
+    .vessel-filters{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+    .filter-chips{display:flex;gap:8px}
+    .chip{padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(50,200,255,.2);color:#AFC3D0;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
+    .chip.active{background:rgba(36,198,255,.25);color:#24C6FF;border-color:#24C6FF}
+    .table-container{max-height:420px;overflow-y:auto;border-radius:8px;border:1px solid rgba(50,200,255,.15)}
+    .source-strip{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 20px;padding:10px 14px;border-radius:10px;background:rgba(10,41,66,.5);border:1px solid rgba(50,200,255,.15);font-size:.82rem}
+  </style>
+</head>
+<body class="app" data-page="vessels">
+  <main class="content">
+    <header class="page-head">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <h1>Vessel Insights &amp; AIS Telemetry</h1>
+          <p>Real-time AIS vessel position tracking, anchorage queue accumulation, and commercial fleet berth allocations.</p>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>Live AIS Stream Connected</span>
+      </div>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+
+    <!-- AIS Feed Status Strip -->
+    <div class="source-strip">
+      <div><span>AISStream WebSocket:</span> <b style="color:#4be3a0" id="statusAisWs">Connected (wss://stream.aisstream.io/v0/stream)</b></div>
+      <div style="margin-left:auto"><span>Congestion Analysis:</span> <b style="color:#ffd27a">AIS-Derived Congestion Active</b></div>
+    </div>
+
+    <!-- Stats Cards Grid -->
+    <section class="grid-6">
+      <article class="stat glass" data-key="vessel_activity">
+        <div class="label">Total Vessel Calls</div>
+        <div class="state" id="statVesselTotal">100 Calls</div>
+        <div class="sub">Corridor movements across East Coast.</div>
+      </article>
+
+      <article class="stat glass" data-key="vessel_availability">
+        <div class="label">Scheduled Incoming</div>
+        <div class="state" id="statVesselExpected">69 Incoming</div>
+        <div class="sub">Scheduled bulk carrier arrivals.</div>
+      </article>
+
+      <article class="stat glass">
+        <div class="label">Currently Working</div>
+        <div class="state" id="statVesselWorking" style="color:#4be3a0">21 Working</div>
+        <div class="sub">Vessels berthed &amp; loading/discharging.</div>
+      </article>
+
+      <article class="stat glass">
+        <div class="label">Anchorage Queue</div>
+        <div class="state" id="statVesselWaiting" style="color:#ffd27a">10 at Anchorage</div>
+        <div class="sub">Waiting queue awaiting berth allocation.</div>
+      </article>
+
+      <article class="stat glass">
+        <div class="label">AIS Congestion Score</div>
+        <div class="state" id="statVesselCongScore" style="color:#24C6FF;font-size:1.8rem">42.0 / 100</div>
+        <div class="sub">Moderate Queue (AIS-derived proxy).</div>
+      </article>
+
+      <article class="stat glass">
+        <div class="label">Charter Fleet Class</div>
+        <div class="state" style="font-size:1.05rem">Panamax &amp; Supramax</div>
+        <div class="sub">Dominant deadweight tonnage on route.</div>
+      </article>
+    </section>
+
+    <!-- AIS-Derived Congestion Overview Banner -->
+    <section class="panel glass" style="margin-top:20px;border-left:4px solid #24C6FF">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 style="color:#24C6FF;font-size:1.05rem">AIS-Derived Port Congestion Metrics</h3>
+          <p class="muted" style="font-size:.82rem;margin-top:4px">
+            Observational analysis derived from AISStream geographic BBOX [19.8N–20.6N, 86.2E–87.2E]. Preserves raw observation logs for dynamic recalculation.
+          </p>
+        </div>
+        <span class="status-pill waiting" id="pillCongCategory">Moderate Queue · Stable</span>
+      </div>
+      <div class="res-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:14px">
+        <div><div class="k">Waiting Time Proxy</div><div class="v" id="txtWaitProxy">~36.0 Hours</div></div>
+        <div><div class="k">Vessel Density</div><div class="v" id="txtVesselDensity">2.1 / 1000 km²</div></div>
+        <div><div class="k">Anchorage Accumulation</div><div class="v" id="txtAccumulation">13 Vessels</div></div>
+        <div><div class="k">Average Speed in BBOX</div><div class="v" id="txtAvgSpeed">3.2 Knots</div></div>
+      </div>
+    </section>
+
+    <!-- Vessel Traffic Table -->
+    <section class="panel glass" style="margin-top:20px">
+      <div class="vessel-filters">
+        <div class="filter-chips">
+          <button type="button" class="chip active" data-filter="all">All Vessels (<span id="cntAll">100</span>)</button>
+          <button type="button" class="chip" data-filter="working">Working (<span id="cntWorking">21</span>)</button>
+          <button type="button" class="chip" data-filter="waiting">Anchorage Queue (<span id="cntWaiting">10</span>)</button>
+          <button type="button" class="chip" data-filter="expected">Expected (<span id="cntExpected">69</span>)</button>
+        </div>
+        <input type="text" id="vesselSearch" placeholder="Search vessel name or cargo…">
+      </div>
+
+      <div class="table-container">
+        <table class="tbl" id="vesselsTable">
+          <thead>
+            <tr>
+              <th>Vessel Name</th>
+              <th>Status / Operation</th>
+              <th>Cargo</th>
+              <th>D / L</th>
+              <th>LOA (m)</th>
+              <th>Beam (m)</th>
+              <th>Draft (m)</th>
+              <th>ETA / Arrival</th>
+              <th>Assigned Berth</th>
+            </tr>
+          </thead>
+          <tbody id="vesselsBody">
+            <tr><td style="font-weight:600;color:#fff">MT. TORM ASLAUG</td><td><span class="status-pill expected">Expected vessel</span></td><td><b>NAPTHA</b></td><td><span class="status-pill expected">L</span></td><td>183.2 m</td><td>32.2 m</td><td style="color:#7be0ff">0.0 m</td><td class="muted" style="font-size:.82rem">28-11 2200</td><td style="font-weight:600;color:#24C6FF">Anchorage</td></tr>
+            <tr><td style="font-weight:600;color:#fff">MV. HL AMBITION</td><td><span class="status-pill expected">Expected vessel</span></td><td><b>PIG IRON</b></td><td><span class="status-pill expected">D</span></td><td>179.5 m</td><td>27.7 m</td><td style="color:#7be0ff">9.5 m</td><td class="muted" style="font-size:.82rem">29-11 0400</td><td style="font-weight:600;color:#24C6FF">PICT</td></tr>
+            <tr><td style="font-weight:600;color:#fff">MV. GREAT TRADER</td><td><span class="status-pill expected">Expected vessel</span></td><td><b>TH.COAL</b></td><td><span class="status-pill expected">L</span></td><td>189.99 m</td><td>32.26 m</td><td style="color:#7be0ff">13.0 m</td><td class="muted" style="font-size:.82rem">29-11 0500</td><td style="font-weight:600;color:#24C6FF">Berth 03</td></tr>
+            <tr><td style="font-weight:600;color:#fff">MV. ULTRA GALAXY</td><td><span class="status-pill working">Working vessel</span></td><td><b>COKING COAL</b></td><td><span class="status-pill expected">D</span></td><td>199.9 m</td><td>32.2 m</td><td style="color:#7be0ff">14.1 m</td><td class="muted" style="font-size:.82rem">At Berth</td><td style="font-weight:600;color:#24C6FF">Berth 04</td></tr>
+            <tr><td style="font-weight:600;color:#fff">MV. APJ MAHAKALI</td><td><span class="status-pill waiting">Waiting at anchorage</span></td><td><b>TH.COAL</b></td><td><span class="status-pill expected">L</span></td><td>225.0 m</td><td>32.26 m</td><td style="color:#7be0ff">14.0 m</td><td class="muted" style="font-size:.82rem">Anchorage</td><td style="font-weight:600;color:#24C6FF">Waiting Queue</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/api.js?v=4"></script>
+  <script src="js/context.js?v=4"></script>
+</body>
+</html>

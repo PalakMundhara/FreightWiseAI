@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forecast History - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="app" data-page="history">
+  <main class="content">
+    <header class="page-head"><h1>Forecast History</h1><p>Saved forecasts and the model's out-of-sample test results, compared with what actually happened.</p></header>
+    <div id="banner" class="banner" hidden></div>
+
+    <section class="panel glass">
+      <div class="tabs" id="tabs"><button data-m="saved" class="active">My saved forecasts</button><button data-m="backtest">Model test period</button></div>
+      <div class="tools">
+        <input type="search" id="q" placeholder="Search…" aria-label="Search">
+        <input type="date" id="dFrom" aria-label="From date"><input type="date" id="dTo" aria-label="To date">
+        <select id="hSel" aria-label="Horizon"><option value="">All horizons</option></select>
+        <button class="btn btn-outline" id="exportBtn">Export CSV</button>
+      </div>
+      <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Input freight</th><th>Predicted</th><th>Horizon</th><th>Actual</th><th>Difference</th><th>% error</th><th>Model</th></tr></thead><tbody id="rows"></tbody></table></div>
+      <p class="muted" id="hNote" style="font-size:.8rem;margin-top:10px"></p>
+    </section>
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+  <script src="js/common.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>

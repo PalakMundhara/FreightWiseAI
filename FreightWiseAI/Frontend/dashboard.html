@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - FreightWise AI</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .live-ticker-strip{display:flex;gap:12px;overflow-x:auto;padding:10px 14px;background:rgba(10,41,66,.6);border:1px solid rgba(36,198,255,.2);border-radius:10px;margin-bottom:20px;font-size:.82rem;white-space:nowrap}
+    .ticker-item{display:inline-flex;align-items:center;gap:6px;color:#AFC3D0}
+    .ticker-item b{color:#fff}
+    .ticker-dot{width:7px;height:7px;border-radius:50%;background:#4be3a0;box-shadow:0 0 6px #4be3a0}
+  </style>
+</head>
+<body class="app" data-page="dashboard">
+  <main class="content">
+    <header class="page-head">
+      <h1>Freight Intelligence Dashboard</h1>
+      <p>Understand current freight conditions, live East Coast marine context, and ML-projected forward movements. <span id="today"></span></p>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+
+    <!-- Live Context Ticker -->
+    <div class="live-ticker-strip">
+      <div class="ticker-item"><span class="ticker-dot"></span><span>Paradip Weather:</span> <b id="tickWeather">32.1 °C Cloudy (Wind 8.3 kph S)</b></div>
+      <div class="ticker-item" style="border-left:1px solid rgba(50,200,255,.2);padding-left:12px"><span>Marine Waves:</span> <b id="tickMarine">1.04m Waves (Swell 0.98m)</b></div>
+      <div class="ticker-item" style="border-left:1px solid rgba(50,200,255,.2);padding-left:12px"><span>AIS Congestion:</span> <b id="tickCong" style="color:#ffd27a">Score 42.0/100 (Moderate Queue)</b></div>
+      <div class="ticker-item" style="border-left:1px solid rgba(50,200,255,.2);padding-left:12px"><span>Baltic BDI:</span> <b id="tickBDI">3,178.0 (-2.75%)</b></div>
+      <div class="ticker-item" style="border-left:1px solid rgba(50,200,255,.2);padding-left:12px"><span>Baltic BCI:</span> <b id="tickBCI">5,103.0 (-11.77%)</b></div>
+    </div>
+
+    <section class="grid-6">
+      <article class="stat glass"><div class="label">Current Freight (BDRY close)</div><div class="value" id="cClose">Loading…</div><div class="sub" id="cCloseSub"></div></article>
+      <article class="stat glass"><div class="label">Forecast (t+14)</div><div class="value" id="cFc">Loading…</div><div class="sub" id="cFcSub"></div></article>
+      <article class="stat glass"><div class="label">Forecast vs latest close</div><div class="value" id="cChg">Loading…</div><div class="sub" id="cChgSub"></div></article>
+      <article class="stat glass"><div class="label">7-Day Average</div><div class="value" id="c7">Loading…</div><div class="sub">Mean of last 7 closes</div></article>
+      <article class="stat glass"><div class="label">30-Day Average</div><div class="value" id="c30">Loading…</div><div class="sub">Mean of last 30 closes</div></article>
+      <article class="stat glass"><div class="label">Coal Import Indicator</div><div class="value" id="cCoal">Loading…</div><div class="sub" id="cCoalSub"></div></article>
+    </section>
+
+    <section class="panel glass">
+      <div class="chart-head">
+        <h3>Freight trend and forecast</h3>
+        <div class="range-btns" id="ranges">
+          <button data-r="7d">7D</button><button data-r="30d">30D</button><button data-r="90d">90D</button>
+          <button data-r="6m">6M</button><button data-r="1y" class="active">1Y</button><button data-r="all">ALL</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="mainChart"></canvas></div>
+      <p class="muted" id="chartNote" style="font-size:.8rem;margin-top:8px">Source: backend dataset. The dashed line is the model's t+14 forecast.</p>
+    </section>
+
+    <section class="panel glass">
+      <h3>AI Insights</h3>
+      <div id="insights" class="muted">Loading freight intelligence…</div>
+    </section>
+
+    <p class="disclaimer">FreightWise AI provides analytical insights to support procurement and chartering decisions. Final commercial decisions should be made by the responsible team.</p>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/api.js?v=4"></script>
+  <script src="js/dashboard.js?v=4"></script>
+</body>
+</html>

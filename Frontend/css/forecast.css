@@ -1,0 +1,57 @@
+/* Forecast Center Styles & Custom Parameter Studio */
+.fc-tabs{display:flex;gap:12px;margin:20px 0 24px;border-bottom:1px solid rgba(50,200,255,.15);padding-bottom:12px}
+.fc-tab{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;background:rgba(10,41,66,.5);border:1px solid rgba(50,200,255,.2);color:#AFC3D0;font:inherit;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .2s ease}
+.fc-tab:hover{background:rgba(36,198,255,.12);color:#fff;border-color:rgba(50,200,255,.4)}
+.fc-tab.active{background:linear-gradient(135deg,rgba(36,198,255,.25),rgba(22,139,255,.2));color:#24C6FF;border-color:#24C6FF;box-shadow:0 0 14px rgba(36,198,255,.2)}
+.pill-badge{font-size:.7rem;padding:2px 8px;border-radius:12px;background:rgba(36,198,255,.2);color:#7be0ff;border:1px solid rgba(36,198,255,.4);text-transform:uppercase;letter-spacing:.5px}
+
+.fc-tab-view{display:none}
+.fc-tab-view.active{display:block}
+
+.fc-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:18px}
+.res-value{font-size:2.4rem;font-weight:700;margin:2px 0}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:14px 0}
+.res-grid .k{font-size:.78rem;color:var(--muted)}
+.res-grid .v{font-weight:600}
+.feat-list{max-height:280px;overflow:auto;margin-top:10px;font-size:.82rem}
+.feat-list h4{margin:10px 0 4px;color:var(--cyan);font-size:.8rem}
+.feat-list div.r{display:flex;justify-content:space-between;gap:10px;padding:2px 0;color:var(--muted)}
+
+.sc-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.sc-row select,.sc-row input{flex:1 1 200px;padding:11px 12px;border-radius:10px;background:rgba(4,20,35,.7);border:1px solid var(--border);color:#fff;font:inherit}
+.sc-row .btn{flex:0 0 auto;width:auto}
+
+/* Custom Parameter Studio */
+.custom-studio{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.1fr);gap:20px}
+.presets-bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}
+.preset-btn{padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(50,200,255,.15);color:#AFC3D0;font-size:.8rem;cursor:pointer;transition:all .15s ease}
+.preset-btn:hover{background:rgba(36,198,255,.15);color:#fff;border-color:var(--cyan)}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:.82rem;font-weight:600;color:#AFC3D0;display:flex;justify-content:space-between}
+.form-group label span.unit{font-weight:400;color:rgba(175,195,208,.6);font-size:.75rem}
+.form-control{padding:10px 12px;border-radius:8px;background:rgba(4,20,35,.75);border:1px solid rgba(50,200,255,.2);color:#fff;font:inherit;font-size:.9rem}
+.form-control:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 8px rgba(36,198,255,.25)}
+.range-wrap{display:flex;align-items:center;gap:10px}
+.range-wrap input[type=range]{flex:1;accent-color:#24C6FF;cursor:pointer}
+.range-val{font-size:.85rem;font-weight:700;color:#24C6FF;min-width:44px;text-align:right}
+
+.rec-box{margin-top:16px;padding:14px;border-radius:10px;background:rgba(36,198,255,.08);border-left:4px solid var(--cyan);font-size:.88rem;line-height:1.45}
+.rec-box strong{color:#7be0ff}
+
+.delta-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:.8rem;font-weight:700}
+.delta-badge.up{background:rgba(75,227,160,.18);color:#4be3a0}
+.delta-badge.down{background:rgba(255,138,138,.18);color:#ff8a8a}
+.delta-badge.stable{background:rgba(255,210,122,.18);color:#ffd27a}
+
+.action-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(50,200,255,.15);flex-wrap:wrap}
+.save-check{display:flex;align-items:center;gap:8px;font-size:.85rem;color:#AFC3D0;cursor:pointer}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:960px){
+  .fc-grid,.custom-studio{grid-template-columns:1fr}
+  .fc-tabs{flex-wrap:wrap}
+}
