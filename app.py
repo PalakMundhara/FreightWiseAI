@@ -1,7 +1,5 @@
 """
 FreightWise AI - Root Application Runner.
-Delegates to backend/app.py while ensuring sys.path and working directories
-are correctly resolved whether executed from root or backend directory.
 """
 
 import os
@@ -24,6 +22,11 @@ spec = importlib.util.spec_from_file_location(
     backend_app_path
 )
 
+if spec is None or spec.loader is None:
+    raise RuntimeError(
+        f"Could not load backend application from {backend_app_path}"
+    )
+
 backend_module = importlib.util.module_from_spec(spec)
 
 sys.modules["backend_app"] = backend_module
@@ -38,6 +41,6 @@ S = getattr(backend_module, "S", None)
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.getenv("PORT", 5000)),
+        port=int(os.getenv("PORT", "5000")),
         debug=False
     )
